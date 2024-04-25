@@ -1,0 +1,10 @@
+^C:\USERS\ADMIN\DESKTOP\VIDEO-PARSER\BUILD\CMAKEFILES\A021A2319AAE585BE2F7BD2A64B6F3F8\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/admin/Desktop/video-parser -BC:/Users/admin/Desktop/video-parser/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/admin/Desktop/video-parser/build/video-parser.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

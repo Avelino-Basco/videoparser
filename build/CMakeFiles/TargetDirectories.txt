@@ -1,0 +1,9 @@
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/Experimental.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/Nightly.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/Continuous.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/video-parser.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/PACKAGE.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/admin/Desktop/video-parser/build/CMakeFiles/ZERO_CHECK.dir
