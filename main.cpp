@@ -33,11 +33,23 @@ static int camera_feed (int argc, char** argv)
             vector<string> filename(camera_no);
             vector<Mat> frame(camera_no);
             vector<bool> success(camera_no);
+            string fps_str;
+            int fps;
 
-            //set fps
-            int fps = 10;
+            //requests FPS
+            cout << "Enter the frame rate (fps): " << endl;
+            getline(cin, fps_str);
+
+            if(fps_str.length() == 0){
+                fps = 1;
+                std::cout << "No specified fps. Set to 1 fps by default..." << endl;
+            }
+
+            else {
+                fps = stoi(fps_str);
+            }
             // Calculate the time interval between each frame capture
-            double interval_ms = 1000.0 / fps; // Interval in milliseconds
+            //double interval_ms = 1000.0 / fps; // Interval in milliseconds
 
             //for debugging
             int counter = 0;
@@ -54,90 +66,63 @@ static int camera_feed (int argc, char** argv)
                     return -1;
                 }
 
-                folderPath[j] = "C:/Users/admin/Desktop/feed/frames" + to_string(j) + "/";  // Specify the folder where frames will be saved
+                folderPath[j] = "C:/Users/ASUS/Desktop/feed/frames" + to_string(j + 1) + "/";  // Specify the folder where frames will be saved
             }
 
-            auto start_loop_time = std::chrono::high_resolution_clock::now();
-
-            //actual parsing
-            while (check){
-                auto start_time = std::chrono::high_resolution_clock::now();
-
-                //read and save current frame for all cameras
-                for (int j = 0; j < camera_no; ++j)
+            cout << "[INIT] Initialization finished." << endl;
+            for (int j = 0; j < camera_no; ++j)
+            {
+                success[j] = cam[j].read(frame[j]);
+                if (!success[j]) 
                 {
-                    if (j == 1) {
-                        stringstream arguments;
-                        string cont_str, programPath;
-                        int cont;
+                    cout << "Error: Cannot read frame from camera " << to_string(j) <<".\n" << endl;
+                    break;
+                }
 
-                        arguments << "--frameno 1" << " " << camera_no << " preview1.jpg --features akaze --conf_thresh 0.1 --match_conf 0.1 --warp mercator";
+                //saves all frame 1s first to respective folders
+                filename[j] = folderPath[j] + "1" + ".jpg";
+                imwrite(filename[j], frame[j]);
+                cout << "Saved frame " << frameCount << " as " << filename[j] << endl;
+            }
+            //next frame
+            
+            frameCount++;
+            counter++;
 
-                        // Convert the stringstream to a string
-                        string argumentString = arguments.str();
-                        programPath = "C:\\Users\\admin\\Desktop\\footagecapture\\build\\Debug\\footagecapture.exe";
-                        // Execute the program with the arguments
-                        string command = programPath + " " + argumentString;
-                        cout << "Executing command: " << command << endl;
-                        system(command.c_str());
+            stringstream arguments;
+            string cont_str, programPath;
+            int cont;
 
-                        if(i == 1){
-                            cout << "1st frame produced. Continue? (1/0)" << endl;
-                            getline(cin, cont_str);
-                                if(cont_str.length() == 0){
-                                    std::cout << "No input provided. Proceeding with stitching..." << endl;
-                                }
+            //folderPath
+            arguments << "--frameno 1" << " " << camera_no << "--output C:/Users/ASUS/Desktop/feed/preview1.jpg --features orb --conf_thresh 0.3 --match_conf 0.3 --warp mercator";
 
-                                else {
-                                    cont = stoi(cont_str);
-                                    if (cont)
-                                        std::cout << "Proceeding with stitching videos.." << endl;
-                                    else{
-                                        std::cout << "Stopping stiching..." << endl;
-                                        return 1;
-                                    }
-                                }
+            // Convert the stringstream to a string
+            string argumentString = arguments.str();
+            programPath = "c:/Users/ASUS/Desktop/199/desktopver/build/Debug/needle.exe";
+
+            // Execute the program with the arguments
+            string command = programPath + " " + argumentString;
+            cout << "Executing command: " << command << endl;
+            system(command.c_str());
+
+            if(frameCount == 1){
+                cout << "1st frame produced. Continue? (1/0)" << endl;
+                getline(cin, cont_str);
+                    if(cont_str.length() == 0){
+                        std::cout << "No input provided. Proceeding with stitching..." << endl;
+                    }
+
+                    else {
+                        cont = stoi(cont_str);
+                        if (cont)
+                            std::cout << "Proceeding with stitching videos.." << endl;
+                        else{
+                            std::cout << "Stopping stiching..." << endl;
+                            return 1;
                         }
                     }
-                    
-                    success[j] = cam[j].read(frame[j]);
-                    if (!success[j]) 
-                    {
-                        cout << "Error: Cannot read frame from camera " << to_string(j) <<".\n" << endl;
-                        break;
-                    }
-
-                    //saves all frame 1s first to respective folders
-                    filename[j] = folderPath[j] + "frame" + to_string(frameCount) + ".jpg";
-                    imwrite(filename[j], frame[j]);
-                    cout << "Saved frame " << frameCount << " as " << filename[j] << endl;
-
-                    
-                    
-                }
-                
-                auto end_time = std::chrono::high_resolution_clock::now();
-
-                // Calculate the time taken for the function call
-                double elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-
-                // Wait for the remaining time to achieve the desired FPS
-                if (elapsed_ms < interval_ms) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(interval_ms - elapsed_ms)));
-                }
-                //next frame
-                frameCount++;
-                counter++;
-
-                if(counter == 10)
-                {
-                    check = false;
-                    auto end_loop_time = std::chrono::high_resolution_clock::now();
-                    double elapsed_loop_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_loop_time - start_loop_time).count();
-
-                    cout << "Time passed:" << to_string(elapsed_loop_ms) << endl;
-                }
             }
+
 
             for (int j = 0; j < camera_no; ++j)
             {
